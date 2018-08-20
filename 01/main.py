@@ -33,7 +33,7 @@ class LnJ(Widget):
         self.scroller = ScrollView( scroll_distance=50, pos=(0, Window.height*.15 ), size=(Window.width, Window.height*.85))
 
         with self.scroller.canvas.after:
-            Color(0,1,1,.1)
+            Color(1,1,1,.5)
             Rectangle(pos=self.scroller.pos, size=self.scroller.size)
 
 
