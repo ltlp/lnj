@@ -1,11 +1,11 @@
 import sys
 import kivy
+
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
-
-
 from kivy.core.window import Window
+
 import main
 from main import LnJ
 
@@ -28,7 +28,6 @@ class Sandbox(App):
 		return self.reload_container
 
 
-
 	def keyboard_cleanup(self):
 		self.keyboard.unbind(on_key_down=self.keyboard_trigger)
 		self.keyboard = None
@@ -38,6 +37,7 @@ class Sandbox(App):
 		print self, keyboard, keycode, text, modifiers
 
 		if keycode[1] == 'r':
+
 			try:
 				self.reload_container.remove_widget(self.LNJ)
 
@@ -48,13 +48,11 @@ class Sandbox(App):
 				self.reload_container.add_widget(self.LNJ)
 
 			except:
-				print "failed to reload!"
+				print "Failed to reload. Bummer. "
 				print sys.exc_info()
 
 
-		
-
-
+		#if keycode[1] == '':
 
 
 
