@@ -11,6 +11,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
+from kivy.uix.popup import Popup
 
 
 import zmq
@@ -20,7 +21,7 @@ from threading import Thread
 
 
 
-class LnJ(Widget):
+class LnJ(Widget): #Master class
 
     def __init__(self, **kwargs):
 
@@ -47,24 +48,65 @@ class LnJ(Widget):
 
         self.scroller.add_widget(self.chat_container)
         self.chat_container.add_widget(self.chat_label)
-        self.boxlayout.add_widget(btn1)
-        self.boxlayout.add_widget(btn2)
+        self.boxlayout.add_widget(self.btn1)
+        self.boxlayout.add_widget(self.btn2)
         self.boxlayout_2.add_widget(self.textinput)
-        self.boxlayout_master.add_widget(boxlayout_2)
-        self.boxlayout_master.add_widget(boxlayout)
+        self.boxlayout_master.add_widget(self.boxlayout_2)
+        self.boxlayout_master.add_widget(self.boxlayout)
     
 
-        self.layout.add_widget(boxlayout_master)
-        self.add_widget(layout)
+        self.layout.add_widget(self.boxlayout_master)
+        self.add_widget(self.layout)
         self.add_widget(self.scroller)
 
+        popsize_x = Window.width*.3
+        popsize_y = Window.height*.3
 
-        self.connect('string')
-        Clock.schedule_interval(self.query_server, .2)
+        self.textinput_username = TextInput(multiline=False,
+                                            pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5+popsize_y*.05),
+                                            size_hint = (.8,.2)
+                                            )
 
-        with self.scroller.canvas.after:
-            Color(1,1,1,.5)
-            Rectangle(pos=self.scroller.pos, size=self.scroller.size)
+        self.textinput_password = TextInput(multiline=False,
+                                            pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5-popsize_y*.09),
+                                            size_hint = (.8,.2)
+                                            )
+       
+       # self.btn_connect.bind(on_press=self.popup_login.dismiss)
+
+
+        # self.popup_login.add_widget(self.textinput_username)
+        # self.popup_login.add_widget(self.textinput_password)
+        # self.popup_login.add_widget(self.btn_connect)
+        
+
+        floatlayout_popup_login = FloatLayout(size_hint =(1,1))#size=(self.width*.4, self.height*.4))
+        floatlayout_popup_login.add_widget(self.textinput_username)
+        floatlayout_popup_login.add_widget(self.textinput_password)
+       
+
+        #self.popup_login.content = floatlayout_popup_login  
+
+      
+
+        self.popup_login = Popup( title='Test popup',
+                                    content=floatlayout_popup_login, 
+                                    size_hint=(None, None), 
+                                    size=(popsize_x, popsize_y)
+                                )       
+
+        self.btn_connect = Button(text='Connect', on_press=self.authenticate, pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5-popsize_y*.2 ), size_hint = (.8,.1))
+        floatlayout_popup_login.add_widget(self.btn_connect)
+
+        #self.popup_login.open()
+
+        #self.connect('string')
+        #Clock.schedule_interval(self.query_server, .2)
+
+        # with self.scroller.canvas.after:
+        #     Color(1,10,0,.5)
+        #     Rectangle(pos=self.scroller.pos, size=self.scroller.size)
+
 
         
 
@@ -93,6 +135,16 @@ class LnJ(Widget):
 
     def connect(self, button):
 
+        self.popup_login.open()
+
+
+
+    def authenticate(self, button):
+
+        self.user = self.textinput_username.text
+        self.password = self.textinput_password.text
+
+
         port = "55010"
 
         self.context = zmq.Context()
@@ -111,12 +163,15 @@ class LnJ(Widget):
         self.poller.register(self.sub_socket, zmq.POLLIN)
 
         data = {
-            'user': "anon",
-            'message': "test data",
+            'user': self.user,
+            'message': self.password,
         }
 
         self.client_socket.send_json(data)
         message = self.client_socket.recv()
+
+        Clock.schedule_interval(self.query_server, .2)
+        self.popup_login.dismiss()
 
 
 
