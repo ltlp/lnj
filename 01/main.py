@@ -59,18 +59,39 @@ class LnJ(Widget): #Master class
         self.add_widget(self.layout)
         self.add_widget(self.scroller)
 
-        popsize_x = Window.width*.3
+        popsize_x = Window.width*.5
         popsize_y = Window.height*.3
 
         self.textinput_username = TextInput(multiline=False,
-                                            pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5+popsize_y*.05),
-                                            size_hint = (.8,.2)
+                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5+popsize_y*.05),
+                                            size_hint = (.6,.2),
+                                            font_size=12,
+                                
+                               
                                             )
 
+        #self.textinput_username.bind(focus=self.on_focus)
+
         self.textinput_password = TextInput(multiline=False,
-                                            pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5-popsize_y*.09),
-                                            size_hint = (.8,.2)
+                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5-popsize_y*.09),
+                                            size_hint = (.6,.2),
+                                            font_size=12,
+                                    
                                             )
+
+
+
+        self.username_label = Label(text="Username",  pos= (self.width*.5-300, self.height*.5-40))
+        self.password_label = Label(text="Password",  pos=(Window.width*.5-300, Window.height*.5-60) )
+
+        # with self.username_label.canvas:
+        #     Color(1,1,1,.5)   
+        #     Rectangle(pos=self.username_label.pos, size=self.username_label.size)
+
+
+
+
+        #self.textinput_password.bind(focus=self.on_focus1)
        
        # self.btn_connect.bind(on_press=self.popup_login.dismiss)
 
@@ -83,19 +104,23 @@ class LnJ(Widget): #Master class
         floatlayout_popup_login = FloatLayout(size_hint =(1,1))#size=(self.width*.4, self.height*.4))
         floatlayout_popup_login.add_widget(self.textinput_username)
         floatlayout_popup_login.add_widget(self.textinput_password)
+        floatlayout_popup_login.add_widget(self.username_label)
+        floatlayout_popup_login.add_widget(self.password_label)
        
 
         #self.popup_login.content = floatlayout_popup_login  
 
       
 
-        self.popup_login = Popup( title='Test popup',
+        self.popup_login = Popup( title='Login',
                                     content=floatlayout_popup_login, 
                                     size_hint=(None, None), 
-                                    size=(popsize_x, popsize_y)
+                                    size=(popsize_x, popsize_y),
+                                    auto_dismiss=False
                                 )       
 
-        self.btn_connect = Button(text='Connect', on_press=self.authenticate, pos=(Window.width*.5-popsize_x*.8/2, Window.height*.5-popsize_y*.2 ), size_hint = (.8,.1))
+        self.btn_connect = Button(text='Connect', on_press=self.authenticate, pos=(Window.width*.5-popsize_x*.475, Window.height*.5-popsize_y*.3 ), size_hint = (1 ,.1))
+
         floatlayout_popup_login.add_widget(self.btn_connect)
 
         #self.popup_login.open()
@@ -107,6 +132,17 @@ class LnJ(Widget): #Master class
         #     Color(1,10,0,.5)
         #     Rectangle(pos=self.scroller.pos, size=self.scroller.size)
 
+
+    def on_focus(self, text_input, value):
+        print text_input
+        print text_input.text
+        text_input.text = ''
+
+
+    def on_focus1(self, text_input, value):
+        print text_input    
+        print text_input.text
+        text_input.text = ''
 
         
 
