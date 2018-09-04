@@ -30,6 +30,9 @@ class LnJ(Widget): #Master class
         self.height = Window.height
         self.width = Window.width
 
+        popsize_x = Window.width*.5
+        popsize_y = Window.height*.3
+
         self.user = ''
 
 
@@ -42,9 +45,51 @@ class LnJ(Widget): #Master class
         self.chat_label = Label(text='', valign='bottom', halign='left', padding=(20,10),  pos=(0,0))
         self.textinput = TextInput(on_text_validate=self.send, multiline=False)
         self.scroller = ScrollView( scroll_distance=50, pos=(0, Window.height*.15 ), size=(Window.width, Window.height*.85))
-        self.btn1 = Button(text='Connect', width=200, on_press=self.connect)
+
+
+
+        self.textinput_username = TextInput(multiline=False,
+                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5+popsize_y*.05),
+                                            size_hint = (.6,.2),
+                                            font_size=12,
+                                
+                               
+                                            )
+
+
+        self.textinput_password = TextInput(multiline=False,
+                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5-popsize_y*.09),
+                                            size_hint = (.6,.2),
+                                            font_size=12,
+                                    
+                                            )
+
+
+
+        self.username_label = Label(text="Username",  pos= (self.width*.5-300, self.height*.5-40))
+        self.password_label = Label(text="Password",  pos=(Window.width*.5-300, Window.height*.5-60) )
+
+        floatlayout_popup_login = FloatLayout(size_hint =(1,1))
+        floatlayout_popup_login.add_widget(self.textinput_username)
+        floatlayout_popup_login.add_widget(self.textinput_password)
+        floatlayout_popup_login.add_widget(self.username_label)
+        floatlayout_popup_login.add_widget(self.password_label)
+
+      
+
+        self.popup_login = Popup( title='Login',
+                                    content=floatlayout_popup_login, 
+                                    size_hint=(None, None), 
+                                    size=(popsize_x, popsize_y),
+                                    auto_dismiss=False
+                                )       
+
+
+
+        self.btn1 = Button(text='Authenticate', width=200, on_press=self.popup_login.open)
+
         self.btn2 = Button(text='Send', on_press=self.send)
-        self.btn = Button(text='Connect')
+        #self.btn = Button(text='Connect')
 
         self.scroller.add_widget(self.chat_container)
         self.chat_container.add_widget(self.chat_label)
@@ -59,65 +104,8 @@ class LnJ(Widget): #Master class
         self.add_widget(self.layout)
         self.add_widget(self.scroller)
 
-        popsize_x = Window.width*.5
-        popsize_y = Window.height*.3
-
-        self.textinput_username = TextInput(multiline=False,
-                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5+popsize_y*.05),
-                                            size_hint = (.6,.2),
-                                            font_size=12,
-                                
-                               
-                                            )
-
-        #self.textinput_username.bind(focus=self.on_focus)
-
-        self.textinput_password = TextInput(multiline=False,
-                                            pos=(Window.width*.5-popsize_x*.3/2, Window.height*.5-popsize_y*.09),
-                                            size_hint = (.6,.2),
-                                            font_size=12,
-                                    
-                                            )
-
-
-
-        self.username_label = Label(text="Username",  pos= (self.width*.5-300, self.height*.5-40))
-        self.password_label = Label(text="Password",  pos=(Window.width*.5-300, Window.height*.5-60) )
-
-        # with self.username_label.canvas:
-        #     Color(1,1,1,.5)   
-        #     Rectangle(pos=self.username_label.pos, size=self.username_label.size)
-
-
-
-
-        #self.textinput_password.bind(focus=self.on_focus1)
-       
-       # self.btn_connect.bind(on_press=self.popup_login.dismiss)
-
-
-        # self.popup_login.add_widget(self.textinput_username)
-        # self.popup_login.add_widget(self.textinput_password)
-        # self.popup_login.add_widget(self.btn_connect)
         
-
-        floatlayout_popup_login = FloatLayout(size_hint =(1,1))#size=(self.width*.4, self.height*.4))
-        floatlayout_popup_login.add_widget(self.textinput_username)
-        floatlayout_popup_login.add_widget(self.textinput_password)
-        floatlayout_popup_login.add_widget(self.username_label)
-        floatlayout_popup_login.add_widget(self.password_label)
-       
-
-        #self.popup_login.content = floatlayout_popup_login  
-
-      
-
-        self.popup_login = Popup( title='Login',
-                                    content=floatlayout_popup_login, 
-                                    size_hint=(None, None), 
-                                    size=(popsize_x, popsize_y),
-                                    auto_dismiss=False
-                                )       
+    
 
         self.btn_connect = Button(text='Connect', on_press=self.authenticate, pos=(Window.width*.5-popsize_x*.475, Window.height*.5-popsize_y*.3 ), size_hint = (1 ,.1))
 
@@ -146,14 +134,15 @@ class LnJ(Widget): #Master class
 
         
 
-    def query_server(self, clock):
+    def query_server(self, value):
 
         msg_events = dict(self.poller.poll(50))
         if self.sub_socket in msg_events:
 
             data = self.sub_socket.recv_json()
             user, message = data['user'], data['message']
-            self.chat_label.text += ('\t{}: {}\n'.format(user, message))
+            print user
+            self.chat_label.text += ('{}: {}\n'.format(user, message))
 
 
     def send(self, button=None):
@@ -169,11 +158,6 @@ class LnJ(Widget): #Master class
 
 
 
-    def connect(self, button):
-
-        self.popup_login.open()
-
-
 
     def authenticate(self, button):
 
@@ -182,6 +166,8 @@ class LnJ(Widget): #Master class
 
 
         port = "55010"
+
+
 
         self.context = zmq.Context()
         self.poller = zmq.Poller()
@@ -200,7 +186,9 @@ class LnJ(Widget): #Master class
 
         data = {
             'user': self.user,
-            'message': self.password,
+            'password': self.password,
+            'authentication' : True,
+            'message': 'success'
         }
 
         self.client_socket.send_json(data)
@@ -213,11 +201,3 @@ class LnJ(Widget): #Master class
 
 if __name__ == "__main__":
     LnJ().run()
-
-
-
-
-
-
-
-
