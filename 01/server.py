@@ -70,29 +70,29 @@ while True:
 		data = socket_server.recv_json() 
 		print data
 
-		if data['authentication'] == True: 
+		# if data['authentication'] == True: 
 
-			if data['user'] in authenticated_users:
+		# 	if data['user'] in authenticated_users:
 
-				hashed_password = data['password']
+		# 		hashed_password = data['password']
 
-				print hashlib.sha224(data['password']).hexdigest() 
-				print authenticated_users[data['user']]
+		# 		print hashlib.sha224(data['password']).hexdigest() 
+		# 		print authenticated_users[data['user']]
 
-				if hashlib.sha224(data['password']).hexdigest() == authenticated_users[data['user']]:
+		# 		if hashlib.sha224(data['password']).hexdigest() == authenticated_users[data['user']]:
 
-					print 'success'
+		# 			print 'success'
 
-				else:
+		# 		else:
 
-					print 'password invalid'
+		# 			print 'password invalid'
 
-			else:
-				 print 'user not in database'
+		# 	else:
+		# 		 print 'user not in database'
 
-		else:
+		# else:
 
-			print "not authentication packet"
+		# 	print "not authentication packet"
 
 
 
